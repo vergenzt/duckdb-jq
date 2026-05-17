@@ -1,0 +1,23 @@
+# name: test/sql/jq.test
+# description: test jq extension
+# group: [sql]
+
+# Before we load the extension, this will fail
+statement error
+SELECT jq('Sam');
+----
+Catalog Error: Scalar Function with name jq does not exist!
+
+# Require statement will ensure this test is run with this extension loaded
+require jq
+
+# Confirm the extension works
+query I
+SELECT jq('Sam');
+----
+...........🦆 Sam
+
+query I
+SELECT jq_openssl_version('Michael') ILIKE 'Jq Michael, my linked OpenSSL version is OpenSSL%';
+----
+true
