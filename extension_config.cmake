@@ -1,9 +1,9 @@
-# Extension configuration for `DuckDB`'s build system.
-# Required by extension-ci-tools even for pure-Rust (cargo) extensions.
-# See: https://github.com/duckdb/extension-ci-tools
+# This file is included by DuckDB's build system. It specifies which extension to load
 
-duckdb_extension_load(jq
-	LOAD_TESTS
-	GIT_URL https://github.com/vergenzt/duckdb-jq
-	GIT_TAG main
+# Extension from this repo
+duckdb_extension_load(waddle
+    SOURCE_DIR ${CMAKE_CURRENT_LIST_DIR}
 )
+
+# Any extra extensions that should be built
+# e.g.: duckdb_extension_load(json)
