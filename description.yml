@@ -1,0 +1,14 @@
+extension:
+  name: jq
+  description: Evaluate jq programs against DuckDB JSON values
+  version: 0.1.0
+  language: Rust
+  build: cargo
+  license: MIT
+  requires_toolchains: rust;python3
+  maintainers:
+    - Tim Vergenz
+
+repo:
+  github: vergenzt/duckdb-jq
+  ref: main
