@@ -6,3 +6,6 @@
 	path = extension-ci-tools
 	url = https://github.com/duckdb/extension-ci-tools
 	branch = main
+[submodule "jq"]
+	path = jq
+	url = https://github.com/jqlang/jq
