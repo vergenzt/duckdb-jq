@@ -16,11 +16,17 @@ SELECT jq('{"a": 1, "b": [10,20,30]}', '.b[1]');
 ----
 20
 
-# Filter producing multiple results is wrapped in a JSON array
+# Sophisticated filter from readme
 query I
+SELECT jq('{"a": 1, "b": [10,20,30]}', '[ {a} + {b: .b[]} ]');
+----
+[{"a":1,"b":10},{"a":1,"b":20},{"a":1,"b":30}]
+
+# Filter producing multiple results fails with an error
+statement error
 SELECT jq('{"a": 1, "b": [10,20,30]}', '.b[]');
 ----
-[10,20,30]
+jq: scalar function expected 1 result but filter produced more than 1
 
 # Missing field returns JSON null (a single result)
 query I
@@ -36,7 +42,7 @@ SELECT jq('{"name": "alice"}', '.name | ascii_upcase');
 
 # Zero results from the filter become SQL NULL
 query II
-SELECT jq('1', 'empty') AS v, jq('1', 'empty') IS NULL AS is_null;
+SELECT jq('1', 'empty') AS v, v IS NULL AS is_null;
 ----
 NULL	true
 
@@ -47,6 +53,12 @@ SELECT jq(j, '.x') FROM (VALUES ('{"x":1}'), ('{"x":2}'), ('{"x":3}')) t(j);
 1
 2
 3
+
+# Null JSON input returns SQL NULL
+query I
+SELECT jq(NULL, '.foo.bar');
+----
+NULL
 
 # Invalid jq syntax is rejected at bind time
 statement error

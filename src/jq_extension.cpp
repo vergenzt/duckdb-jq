@@ -30,14 +30,14 @@ struct JqBindData : public FunctionData {
 };
 
 struct JqLocalState : public FunctionLocalState {
-	JqLocalState() : jq(nullptr) {
+	JqLocalState() : jq_state(nullptr) {
 	}
 	~JqLocalState() override {
-		if (jq) {
-			jq_teardown(&jq);
+		if (jq_state) {
+			jq_teardown(&jq_state);
 		}
 	}
-	jq_state *jq;
+	jq_state *jq_state;
 };
 
 static void JqErrorCb(void *data, jv msg) {
@@ -50,7 +50,7 @@ static void JqErrorCb(void *data, jv msg) {
 }
 
 unique_ptr<FunctionData> JqScalarBind(ClientContext &context, ScalarFunction &bound_function,
-                                        vector<unique_ptr<Expression>> &arguments) {
+                                      vector<unique_ptr<Expression>> &arguments) {
 	auto &filter_arg = arguments[1];
 	if (filter_arg->HasParameter()) {
 		throw ParameterNotResolvedException();
@@ -83,58 +83,68 @@ static unique_ptr<FunctionLocalState> JqInitLocalState(ExpressionState &state, c
                                                        FunctionData *bind_data) {
 	auto &info = bind_data->Cast<JqBindData>();
 	auto local = make_uniq<JqLocalState>();
-	local->jq = jq_init();
-	if (!local->jq) {
+	local->jq_state = jq_init();
+	if (!local->jq_state) {
 		throw InvalidInputException("jq: failed to allocate jq state");
 	}
-	if (!jq_compile(local->jq, info.filter.c_str())) {
+	if (!jq_compile(local->jq_state, info.filter.c_str())) {
 		throw InvalidInputException("jq: failed to compile filter '%s'", info.filter);
 	}
 	return std::move(local);
 }
 
-void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result) {
+void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
 	auto &lstate = ExecuteFunctionState::GetFunctionState(state)->Cast<JqLocalState>();
-	auto jq = lstate.jq;
+	auto jq_state = lstate.jq_state;
+	auto inputs_vec = args.data[0];
 
-	UnaryExecutor::ExecuteWithNulls<string_t, string_t>(
-	    args.data[0], result, args.size(), [&](string_t input, ValidityMask &mask, idx_t idx) -> string_t {
-		    jv parsed = jv_parse_sized(input.GetData(), UnsafeNumericCast<int>(input.GetSize()));
-		    if (!jv_is_valid(parsed)) {
-			    jv msg = jv_invalid_get_msg(parsed);
-			    string err = jv_get_kind(msg) == JV_KIND_STRING ? jv_string_value(msg) : "invalid JSON";
-			    jv_free(msg);
-			    throw InvalidInputException("jq: failed to parse input JSON: %s", err);
-		    }
+	auto input_handler = [&](string_t input, ValidityMask &mask, idx_t idx) -> string_t {
+		// TODO: add a setting for whether to coerce input/output JSON nulls to/from SQL nulls?
 
-		    jq_start(jq, parsed, 0);
+		// TODO: can we get rid of the UnsafeNumericCast?
+		// > main problem is that jv_parse_sized takes an i32 but input.GetSize() is a u64.
+		// > what happens if input is longer than 2^32? (4 GiB)
+		// > https://duckdb.org/docs/current/operations_manual/limits says the "default" string size limit is 4GB
+		// > ... is that configurable?
+		jv input_jv = jv_parse_sized(input.GetData(), UnsafeNumericCast<int>(input.GetSize()));
+		if (!jv_is_valid(input_jv)) {
+			jv msg = jv_invalid_get_msg(input_jv);
+			string err = jv_get_kind(msg) == JV_KIND_STRING ? jv_string_value(msg) : "invalid JSON";
+			jv_free(msg);
+			throw InvalidInputException("jq: failed to parse input JSON: %s", err);
+		}
 
-		    vector<jv> results;
-		    for (jv r = jq_next(jq); jv_is_valid(r); r = jq_next(jq)) {
-			    results.push_back(r);
-		    }
+		jq_start(jq_state, input_jv, 0); // (input_jv consumed)
+		jv result_jv = jq_next(jq_state);
 
-		    if (results.empty()) {
-			    mask.SetInvalid(idx);
-			    return string_t();
-		    }
+		// no result -> SQL null
+		if (!jv_is_valid(result_jv)) {
+			jv_free(result_jv);
+			mask.SetInvalid(idx);
+			return string_t();
+		}
 
-		    jv final_value;
-		    if (results.size() == 1) {
-			    final_value = results[0];
-		    } else {
-			    final_value = jv_array();
-			    for (auto &r : results) {
-				    final_value = jv_array_append(final_value, r);
-			    }
-		    }
+		// extra result -> error
+		// (TODO: add a `jq_multi` function permitting multiple results, and "unnesting" them?)
+		jv extra_jv = jq_next(jq_state);
+		if (jv_is_valid(extra_jv)) {
+			jv_free(result_jv);
+			jv_free(extra_jv);
+			throw OutOfRangeException("jq: scalar function expected 1 result but filter produced more than 1");
+		}
+		jv_free(extra_jv);
 
-		    jv dumped = jv_dump_string(final_value, 0);
-		    int len = jv_string_length_bytes(jv_copy(dumped));
-		    string_t out = StringVector::AddString(result, jv_string_value(dumped), UnsafeNumericCast<idx_t>(len));
-		    jv_free(dumped);
-		    return out;
-	    });
+		// result is good -> dump it to string
+		jv result_jv_str = jv_dump_string(result_jv, 0);
+		idx_t result_str_len = UnsafeNumericCast<idx_t>(jv_string_length_bytes(jv_copy(result_jv_str)));
+		const char *result_str = jv_string_value(result_jv_str);
+		string_t out = StringVector::AddString(result_vec, result_str, result_str_len);
+		jv_free(result_jv_str);
+
+		return out;
+	};
+
+	UnaryExecutor::ExecuteWithNulls<string_t, string_t>(inputs_vec, result_vec, args.size(), input_handler);
 }
 
 static void LoadInternal(ExtensionLoader &loader) {
