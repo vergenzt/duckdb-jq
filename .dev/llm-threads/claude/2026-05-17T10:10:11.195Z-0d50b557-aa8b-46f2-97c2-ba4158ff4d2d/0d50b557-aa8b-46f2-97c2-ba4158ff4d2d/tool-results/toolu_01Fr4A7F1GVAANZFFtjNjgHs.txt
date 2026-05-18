@@ -1,0 +1,186 @@
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/sequence/nextval.cpp-102-	auto &binder = bind_input.binder;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/sequence/nextval.cpp-103-	// parameter to nextval function is a foldable constant
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/sequence/nextval.cpp-104-	// evaluate the constant and perform the catalog lookup already
+duckdb/src/function/scalar/sequence/nextval.cpp:105:	auto seqname = ExpressionExecutor::EvaluateScalar(binder.context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/sequence/nextval.cpp-106-	if (seqname.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/sequence/nextval.cpp-107-		return nullptr;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/sequence/nextval.cpp-108-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-38-		}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-39-
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-40-		// Rebind to return a date if we are truncating that far
+duckdb/src/function/scalar/create_sort_key.cpp:41:		Value sort_specifier = ExpressionExecutor::EvaluateScalar(context, *arguments[i]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-42-		if (sort_specifier.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-43-			throw BinderException("sort_specifier cannot be NULL");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-44-		}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-812-		if (!col_arg.IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-813-			throw BinderException("col must be a constant value - but got %s", col_arg.ToString());
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-814-		}
+duckdb/src/function/scalar/create_sort_key.cpp:815:		Value col = ExpressionExecutor::EvaluateScalar(context, col_arg);
+duckdb/src/function/scalar/create_sort_key.cpp-816-		const auto col_list = Parser::ParseColumnList(col.ToString());
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-817-		if (col_list.LogicalColumnCount() != 1) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-818-			throw BinderException("decode_sort_key col must contain exactly one column");
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-838-		if (!specifier_arg.IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-839-			throw BinderException("sort_specifier must be a constant value - but got %s", specifier_arg.ToString());
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-840-		}
+duckdb/src/function/scalar/create_sort_key.cpp:841:		Value sort_specifier = ExpressionExecutor::EvaluateScalar(context, specifier_arg);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-842-		if (sort_specifier.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-843-			throw BinderException("sort_specifier cannot be NULL");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/create_sort_key.cpp-844-		}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/geometry/geometry_functions.cpp-116-	if (!arguments[1]->IsFoldable()) {
+duckdb/src/function/scalar/geometry/geometry_functions.cpp-117-		throw BinderException("ST_SetCRS: CRS argument must be constant!");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/geometry/geometry_functions.cpp-118-	}
+duckdb/src/function/scalar/geometry/geometry_functions.cpp:119:	const auto crs_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/geometry/geometry_functions.cpp-120-	if (!crs_val.IsNull()) {
+duckdb/src/function/scalar/geometry/geometry_functions.cpp-121-		const auto &crs_str = StringValue::Get(crs_val);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/geometry/geometry_functions.cpp-122-
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-53-	if (!format_arg->IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-54-		throw InvalidInputException(*format_arg, "strftime format must be a constant");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-55-	}
+duckdb/src/function/scalar/date/strftime.cpp:56:	Value options_str = ExpressionExecutor::EvaluateScalar(context, *format_arg);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-57-	auto format_string = options_str.GetValue<string>();
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-58-	StrfTimeFormat format;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-59-	bool is_null = options_str.IsNull();
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-210-		if (!arguments[1]->IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-211-			throw InvalidInputException(*arguments[0], "strptime format must be a constant");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-212-		}
+duckdb/src/function/scalar/date/strftime.cpp:213:		Value format_value = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-214-		string format_string;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-215-		StrpTimeFormat format;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/date/strftime.cpp-216-		if (format_value.IsNull()) {
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/variant/variant_extract.cpp-40-	if (!expr.IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/variant/variant_extract.cpp-41-		return false;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/variant/variant_extract.cpp-42-	}
+duckdb/src/function/scalar/variant/variant_extract.cpp:43:	constant_arg = ExpressionExecutor::EvaluateScalar(context, expr);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/variant/variant_extract.cpp-44-	if (!constant_arg.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/variant/variant_extract.cpp-45-		return true;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/variant/variant_extract.cpp-46-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/getvariable.cpp-32-		throw NotImplementedException("getvariable requires a constant input");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/getvariable.cpp-33-	}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/getvariable.cpp-34-	Value value;
+duckdb/src/function/scalar/generic/getvariable.cpp:35:	auto variable_name = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/getvariable.cpp-36-	if (!variable_name.IsNull()) {
+duckdb/src/function/scalar/generic/getvariable.cpp-37-		ClientConfig::GetConfig(context).GetUserVariable(variable_name.ToString(), value);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/getvariable.cpp-38-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/constant_or_null.cpp-81-		throw BinderException("ConstantOrNull requires a constant input");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/constant_or_null.cpp-82-	}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/constant_or_null.cpp-83-	D_ASSERT(arguments.size() >= 2);
+duckdb/src/function/scalar/generic/constant_or_null.cpp:84:	auto value = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/constant_or_null.cpp-85-	bound_function.SetReturnType(arguments[0]->return_type);
+duckdb/src/function/scalar/generic/constant_or_null.cpp-86-	return make_uniq<ConstantOrNullBindData>(std::move(value));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/generic/constant_or_null.cpp-87-}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/like.cpp-351-		}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/like.cpp-352-	}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/like.cpp-353-	if (arguments[1]->IsFoldable()) {
+duckdb/src/function/scalar/string/like.cpp:354:		Value pattern_str = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+duckdb/src/function/scalar/string/like.cpp-355-		return LikeMatcher::CreateLikeMatcher(pattern_str.ToString());
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/like.cpp-356-	}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/like.cpp-357-	return nullptr;
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-11-	if (!expr.IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-12-		return false;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-13-	}
+duckdb/src/function/scalar/string/regexp/regexp_util.cpp:14:	Value pattern_str = ExpressionExecutor::EvaluateScalar(context, expr);
+duckdb/src/function/scalar/string/regexp/regexp_util.cpp-15-	if (!pattern_str.IsNull() && pattern_str.type().id() == LogicalTypeId::VARCHAR) {
+duckdb/src/function/scalar/string/regexp/regexp_util.cpp-16-		constant_string = StringValue::Get(pattern_str);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-17-		return true;
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-70-	if (!expr.IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-71-		throw InvalidInputException("Regex options field must be a constant");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-72-	}
+duckdb/src/function/scalar/string/regexp/regexp_util.cpp:73:	Value options_str = ExpressionExecutor::EvaluateScalar(context, expr);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-74-	if (options_str.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-75-		throw InvalidInputException("Regex options field must not be NULL");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-76-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-89-	if (!group_expr.IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-90-		throw InvalidInputException("Group specification field must be a constant list");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-91-	}
+duckdb/src/function/scalar/string/regexp/regexp_util.cpp:92:	Value list_val = ExpressionExecutor::EvaluateScalar(context, group_expr);
+duckdb/src/function/scalar/string/regexp/regexp_util.cpp-93-	if (list_val.IsNull() || list_val.type().id() != LogicalTypeId::LIST) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-94-		throw BinderException("Group specification must be a non-NULL LIST");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp/regexp_util.cpp-95-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp.cpp-346-		if (!arguments[2]->IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp.cpp-347-			throw InvalidInputException("Group specification field must be a constant!");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp.cpp-348-		}
+duckdb/src/function/scalar/string/regexp.cpp:349:		Value group = ExpressionExecutor::EvaluateScalar(context, *arguments[2]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp.cpp-350-		if (group.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/string/regexp.cpp-351-			group_string = "";
+duckdb/src/function/scalar/string/regexp.cpp-352-		} else if (group.type().id() == LogicalTypeId::LIST) {
+--
+duckdb/src/function/scalar/system/parse_log_message.cpp-41-		throw BinderException("structured_log_schema: 'log_type' argument must be a string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/parse_log_message.cpp-42-	}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/parse_log_message.cpp-43-
+duckdb/src/function/scalar/system/parse_log_message.cpp:44:	auto type = StringValue::Get(ExpressionExecutor::EvaluateScalar(context, *arguments[0]));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/parse_log_message.cpp-45-
+duckdb/src/function/scalar/system/parse_log_message.cpp-46-	auto lookup = LogManager::Get(context).LookupLogType(type);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/parse_log_message.cpp-47-
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/function_binder.cpp-345-				continue;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/function_binder.cpp-346-			}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/function_binder.cpp-347-			Value result;
+duckdb/src/function/function_binder.cpp:348:			if (!ExpressionExecutor::TryEvaluateScalar(context, *child, result)) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/function_binder.cpp-349-				continue;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/function_binder.cpp-350-			}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/function_binder.cpp-351-			if (result.IsNull()) {
+--
+duckdb/src/function/scalar/system/write_log.cpp-77-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/src/function/scalar/system/write_log.cpp-78-				throw BinderException("write_log: 'disable_logging' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-79-			}
+duckdb/src/function/scalar/system/write_log.cpp:80:			result->disable_logging = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-81-		} else if (arg->alias == "scope") {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-82-			ThrowIfNotConstant(*arg);
+duckdb/src/function/scalar/system/write_log.cpp-83-			if (arg->return_type.id() != LogicalTypeId::VARCHAR) {
+duckdb/src/function/scalar/system/write_log.cpp-84-				throw BinderException("write_log: 'scope' argument must be a string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-85-			}
+duckdb/src/function/scalar/system/write_log.cpp:86:			result->scope = StringValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-87-		} else if (arg->alias == "level") {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-88-			ThrowIfNotConstant(*arg);
+duckdb/src/function/scalar/system/write_log.cpp-89-			if (arg->return_type.id() != LogicalTypeId::VARCHAR) {
+duckdb/src/function/scalar/system/write_log.cpp-90-				throw BinderException("write_log: 'level' argument must be a string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-91-			}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-92-			result->level =
+duckdb/src/function/scalar/system/write_log.cpp:93:			    EnumUtil::FromString<LogLevel>(StringValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg)));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-94-		} else if (arg->alias == "log_type") {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-95-			ThrowIfNotConstant(*arg);
+duckdb/src/function/scalar/system/write_log.cpp-96-			if (arg->return_type.id() != LogicalTypeId::VARCHAR) {
+duckdb/src/function/scalar/system/write_log.cpp-97-				throw BinderException("write_log: 'log_type' argument must be a string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-98-			}
+duckdb/src/function/scalar/system/write_log.cpp:99:			result->type = StringValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-100-		} else if (arg->alias == "return_value") {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-101-			result->return_type = arg->return_type;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/system/write_log.cpp-102-			result->output_col = i;
+--
+duckdb/src/function/scalar/struct/struct_extract.cpp-50-	if (key_child->return_type.id() != LogicalTypeId::VARCHAR || !key_child->IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-51-		throw BinderException("Key name for struct_extract needs to be a constant string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-52-	}
+duckdb/src/function/scalar/struct/struct_extract.cpp:53:	Value key_val = ExpressionExecutor::EvaluateScalar(context, *key_child);
+duckdb/src/function/scalar/struct/struct_extract.cpp-54-	D_ASSERT(key_val.type().id() == LogicalTypeId::VARCHAR);
+duckdb/src/function/scalar/struct/struct_extract.cpp-55-	auto &key_str = StringValue::Get(key_val);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-56-	if (key_val.IsNull() || key_str.empty()) {
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-114-	if (!key_child->IsFoldable()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-115-		throw BinderException("Key index for struct_extract needs to be a constant value");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-116-	}
+duckdb/src/function/scalar/struct/struct_extract.cpp:117:	Value key_val = ExpressionExecutor::EvaluateScalar(context, *key_child);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-118-	auto index = key_val.GetValue<int64_t>();
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-119-	if (index <= 0 || idx_t(index) > struct_children.size()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/struct_extract.cpp-120-		throw BinderException("Key index %lld for struct_extract out of range - expected an index between 1 and %llu",
+--
+duckdb/src/function/scalar/struct/remap_struct.cpp-584-	auto source_map = RemapIndex::GetMap(from_type);
+duckdb/src/function/scalar/struct/remap_struct.cpp-585-	auto target_map = RemapIndex::GetMap(to_type);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/remap_struct.cpp-586-
+duckdb/src/function/scalar/struct/remap_struct.cpp:587:	Value remap_val = ExpressionExecutor::EvaluateScalar(context, *arguments[2]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/remap_struct.cpp-588-
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/remap_struct.cpp-589-	// (recursively) generate the remap entries
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/src/function/scalar/struct/remap_struct.cpp-590-	case_insensitive_map_t<RemapEntry> remap_map;

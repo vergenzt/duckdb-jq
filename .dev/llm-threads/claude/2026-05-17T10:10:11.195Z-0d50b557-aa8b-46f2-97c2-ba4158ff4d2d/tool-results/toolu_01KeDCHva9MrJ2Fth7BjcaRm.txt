@@ -1,0 +1,197 @@
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-datepart.cpp-487-			}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-datepart.cpp-488-
+duckdb/extension/icu/icu-datepart.cpp:489:			Value part_value = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-datepart.cpp-490-			if (part_value.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-datepart.cpp-491-				break;
+--
+duckdb/extension/icu/icu-datepart.cpp-525-		BindStructData::part_codes_t part_codes;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-datepart.cpp-526-
+duckdb/extension/icu/icu-datepart.cpp:527:		Value parts_list = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+duckdb/extension/icu/icu-datepart.cpp-528-		if (parts_list.type().id() == LogicalTypeId::LIST) {
+duckdb/extension/icu/icu-datepart.cpp-529-			auto &list_children = ListValue::GetChildren(parts_list);
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-strptime.cpp-189-		}
+duckdb/extension/icu/icu-strptime.cpp-190-		scalar_function_t function = (bound_function.name == "try_strptime") ? TryParse : Parse;
+duckdb/extension/icu/icu-strptime.cpp:191:		Value format_value = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-strptime.cpp-192-		string format_string;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu-strptime.cpp-193-		StrpTimeFormat format;
+--
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-60-				throw BinderException("json_serialize_sql: 'skip_null' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-61-			}
+duckdb/extension/json/json_functions/json_serialize_sql.cpp:62:			skip_if_null = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-63-		} else if (alias == "skip_empty") {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-64-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-65-				throw BinderException("json_serialize_sql: 'skip_empty' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-66-			}
+duckdb/extension/json/json_functions/json_serialize_sql.cpp:67:			skip_if_empty = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-68-		} else if (alias == "format") {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-69-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-70-				throw BinderException("json_serialize_sql: 'format' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-71-			}
+duckdb/extension/json/json_functions/json_serialize_sql.cpp:72:			format = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-73-		} else if (alias == "skip_default") {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-74-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-75-				throw BinderException("json_serialize_sql: 'skip_default' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-76-			}
+duckdb/extension/json/json_functions/json_serialize_sql.cpp:77:			skip_if_default = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_sql.cpp-78-		} else {
+duckdb/extension/json/json_functions/json_serialize_sql.cpp-79-			throw BinderException(StringUtil::Format("json_serialize_sql: Unknown argument '%s'", alias));
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_transform.cpp-77-		throw BinderException("JSON structure must be a constant!");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_transform.cpp-78-	}
+duckdb/extension/json/json_functions/json_transform.cpp:79:	auto structure_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+duckdb/extension/json/json_functions/json_transform.cpp-80-	if (structure_val.IsNull() || arguments[1]->return_type == LogicalTypeId::SQLNULL) {
+duckdb/extension/json/json_functions/json_transform.cpp-81-		bound_function.return_type = LogicalTypeId::SQLNULL;
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu_extension.cpp-177-		throw NotImplementedException("ICU_SORT_KEY(VARCHAR, VARCHAR) with non-constant collation is not supported");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu_extension.cpp-178-	}
+duckdb/extension/icu/icu_extension.cpp:179:	Value val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]).CastAs(context, LogicalType::VARCHAR);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu_extension.cpp-180-	if (val.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/icu/icu_extension.cpp-181-		throw NotImplementedException("ICU_SORT_KEY(VARCHAR, VARCHAR) expected a non-null collation");
+--
+duckdb/extension/json/json_functions.cpp-64-	JSONPathType path_type = JSONPathType::REGULAR;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions.cpp-65-	if (arguments[1]->IsFoldable()) {
+duckdb/extension/json/json_functions.cpp:66:		const auto path_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions.cpp-67-		if (!path_val.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions.cpp-68-			constant = true;
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions.cpp-109-	vector<string> paths;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions.cpp-110-	vector<idx_t> lens;
+duckdb/extension/json/json_functions.cpp:111:	auto paths_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions.cpp-112-
+duckdb/extension/json/json_functions.cpp-113-	for (auto &path_val : ListValue::GetChildren(paths_val)) {
+--
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-69-				throw BinderException("json_serialize_plan: 'skip_null' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-70-			}
+duckdb/extension/json/json_functions/json_serialize_plan.cpp:71:			skip_if_null = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-72-		} else if (alias == "skip_empty") {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-73-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-74-				throw BinderException("json_serialize_plan: 'skip_empty' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-75-			}
+duckdb/extension/json/json_functions/json_serialize_plan.cpp:76:			skip_if_empty = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-77-		} else if (alias == "skip_default") {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-78-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-79-				throw BinderException("json_serialize_plan: 'skip_default' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-80-			}
+duckdb/extension/json/json_functions/json_serialize_plan.cpp:81:			skip_if_default = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-82-		} else if (alias == "format") {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-83-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-84-				throw BinderException("json_serialize_plan: 'format' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-85-			}
+duckdb/extension/json/json_functions/json_serialize_plan.cpp:86:			format = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-87-		} else if (alias == "optimize") {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-88-			if (arg->return_type.id() != LogicalTypeId::BOOLEAN) {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-89-				throw BinderException("json_serialize_plan: 'optimize' argument must be a boolean");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-90-			}
+duckdb/extension/json/json_functions/json_serialize_plan.cpp:91:			optimize = BooleanValue::Get(ExpressionExecutor::EvaluateScalar(context, *arg));
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/json/json_functions/json_serialize_plan.cpp-92-		} else {
+duckdb/extension/json/json_functions/json_serialize_plan.cpp-93-			throw BinderException(StringUtil::Format("json_serialize_plan: Unknown argument '%s'", alias));
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/parquet/writer/variant/convert_variant.cpp-978-			throw BinderException("Optional second argument 'shredding' has to be a constant expression");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/parquet/writer/variant/convert_variant.cpp-979-		}
+duckdb/extension/parquet/writer/variant/convert_variant.cpp:980:		Value type_str = ExpressionExecutor::EvaluateScalar(context, shredding);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/parquet/writer/variant/convert_variant.cpp-981-		if (type_str.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/parquet/writer/variant/convert_variant.cpp-982-			throw BinderException("Optional second argument 'shredding' can not be NULL");
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/math/numeric.cpp-498-		throw NotImplementedException("%s(DECIMAL, INTEGER) with non-constant precision is not supported", fname);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/math/numeric.cpp-499-	}
+duckdb/extension/core_functions/scalar/math/numeric.cpp:500:	Value val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]).DefaultCastAs(LogicalType::INTEGER);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/math/numeric.cpp-501-	if (val.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/math/numeric.cpp-502-		throw NotImplementedException("%s(DECIMAL, INTEGER) with non-constant precision is not supported", fname);
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/current_setting.cpp-44-		throw ParserException("Key name for current_setting needs to be a constant string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/current_setting.cpp-45-	}
+duckdb/extension/core_functions/scalar/generic/current_setting.cpp:46:	Value key_val = ExpressionExecutor::EvaluateScalar(context, *key_child);
+duckdb/extension/core_functions/scalar/generic/current_setting.cpp-47-	D_ASSERT(key_val.type().id() == LogicalTypeId::VARCHAR);
+duckdb/extension/core_functions/scalar/generic/current_setting.cpp-48-	if (key_val.IsNull() || StringValue::Get(key_val).empty()) {
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/system_functions.cpp-56-		throw NotImplementedException("current_schemas requires a constant input");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/system_functions.cpp-57-	}
+duckdb/extension/core_functions/scalar/generic/system_functions.cpp:58:	Value schema_value = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/system_functions.cpp-59-	Value result_val;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/system_functions.cpp-60-	if (schema_value.IsNull()) {
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_part.cpp-1766-	}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_part.cpp-1767-
+duckdb/extension/core_functions/scalar/date/date_part.cpp:1768:	Value part_value = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_part.cpp-1769-	const auto part_name = part_value.ToString();
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_part.cpp-1770-	switch (GetDatePartSpecifier(part_name)) {
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_part.cpp-1952-		part_codes_t part_codes;
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_part.cpp-1953-
+duckdb/extension/core_functions/scalar/date/date_part.cpp:1954:		Value parts_list = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+duckdb/extension/core_functions/scalar/date/date_part.cpp-1955-		if (parts_list.type().id() == LogicalTypeId::LIST) {
+duckdb/extension/core_functions/scalar/date/date_part.cpp-1956-			auto &list_children = ListValue::GetChildren(parts_list);
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_trunc.cpp-577-
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_trunc.cpp-578-	// Rebind to return a date if we are truncating that far
+duckdb/extension/core_functions/scalar/date/date_trunc.cpp:579:	Value part_value = ExpressionExecutor::EvaluateScalar(context, *arguments[0]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_trunc.cpp-580-	if (part_value.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/date/date_trunc.cpp-581-		return nullptr;
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/type_functions.cpp-87-			throw BinderException("make_type function arguments must be constant expressions");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/type_functions.cpp-88-		}
+duckdb/extension/core_functions/scalar/generic/type_functions.cpp:89:		auto val = ExpressionExecutor::EvaluateScalar(input.context, *child);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/type_functions.cpp-90-		args.emplace_back(name, val);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/generic/type_functions.cpp-91-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/union/union_extract.cpp-65-		throw BinderException("Key name for union_extract needs to be a constant string");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/union/union_extract.cpp-66-	}
+duckdb/extension/core_functions/scalar/union/union_extract.cpp:67:	Value key_val = ExpressionExecutor::EvaluateScalar(context, *key_child);
+duckdb/extension/core_functions/scalar/union/union_extract.cpp-68-	D_ASSERT(key_val.type().id() == LogicalTypeId::VARCHAR);
+duckdb/extension/core_functions/scalar/union/union_extract.cpp-69-	auto &key_str = StringValue::Get(key_val);
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/list/list_sort.cpp-278-		throw InvalidInputException("Sorting order must be a constant");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/list/list_sort.cpp-279-	}
+duckdb/extension/core_functions/scalar/list/list_sort.cpp:280:	Value order_value = ExpressionExecutor::EvaluateScalar(context, expr);
+duckdb/extension/core_functions/scalar/list/list_sort.cpp-281-	auto order_name = StringUtil::Upper(order_value.ToString());
+duckdb/extension/core_functions/scalar/list/list_sort.cpp-282-	return EnumUtil::FromString<T>(order_name.c_str());
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/list/list_aggregates.cpp-445-		}
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/list/list_aggregates.cpp-446-		// get the function name
+duckdb/extension/core_functions/scalar/list/list_aggregates.cpp:447:		Value function_value = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/list/list_aggregates.cpp-448-		function_name = function_value.ToString();
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/list/list_aggregates.cpp-449-	}
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/approximate_quantile.cpp-241-		throw BinderException("APPROXIMATE QUANTILE can only take constant quantile parameters");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/approximate_quantile.cpp-242-	}
+duckdb/extension/core_functions/aggregate/holistic/approximate_quantile.cpp:243:	Value quantile_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/approximate_quantile.cpp-244-	if (quantile_val.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/approximate_quantile.cpp-245-		throw BinderException("APPROXIMATE QUANTILE parameter list cannot be NULL");
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/distributive/bitstring_agg.cpp-250-			throw BinderException("bitstring_agg requires a constant min and max argument");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/distributive/bitstring_agg.cpp-251-		}
+duckdb/extension/core_functions/aggregate/distributive/bitstring_agg.cpp:252:		auto min = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+duckdb/extension/core_functions/aggregate/distributive/bitstring_agg.cpp:253:		auto max = ExpressionExecutor::EvaluateScalar(context, *arguments[2]);
+duckdb/extension/core_functions/aggregate/distributive/bitstring_agg.cpp-254-		Function::EraseArgument(function, arguments, 2);
+duckdb/extension/core_functions/aggregate/distributive/bitstring_agg.cpp-255-		Function::EraseArgument(function, arguments, 1);
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/map/switch.cpp-56-		throw BinderException("SWITCH expected a constant map for the cases");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/map/switch.cpp-57-	}
+duckdb/extension/core_functions/scalar/map/switch.cpp:58:	auto map_value = ExpressionExecutor::EvaluateScalar(context, *cases);
+duckdb/extension/core_functions/scalar/map/switch.cpp-59-	auto values_type = MapType::ValueType(map_value.type());
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/scalar/map/switch.cpp-60-	return make_uniq<SwitchFunctionBindData>(values_type, map_index);
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-317-		throw BinderException("RESERVOIR_QUANTILE can only take constant quantile parameters");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-318-	}
+duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp:319:	Value quantile_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-320-	vector<double> quantiles;
+duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-321-	if (quantile_val.type().id() != LogicalTypeId::LIST) {
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-339-		throw BinderException("RESERVOIR_QUANTILE can only take constant sample size parameters");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-340-	}
+duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp:341:	Value sample_size_val = ExpressionExecutor::EvaluateScalar(context, *arguments[2]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-342-	if (sample_size_val.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/reservoir_quantile.cpp-343-		throw BinderException("Size of the RESERVOIR_QUANTILE sample cannot be NULL");
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/quantile.cpp-575-		throw BinderException("QUANTILE can only take constant parameters");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/quantile.cpp-576-	}
+duckdb/extension/core_functions/aggregate/holistic/quantile.cpp:577:	Value quantile_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/quantile.cpp-578-	if (quantile_val.IsNull()) {
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/holistic/quantile.cpp-579-		throw BinderException("QUANTILE argument must not be NULL");
+--
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/distributive/string_agg.cpp-133-		throw BinderException("Separator argument to StringAgg must be a constant");
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/distributive/string_agg.cpp-134-	}
+duckdb/extension/core_functions/aggregate/distributive/string_agg.cpp:135:	auto separator_val = ExpressionExecutor::EvaluateScalar(context, *arguments[1]);
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/distributive/string_agg.cpp-136-	string separator_string = ",";
+/Users/tim_vergenz/code/personal/duckdb-jq/duckdb/extension/core_functions/aggregate/distributive/string_agg.cpp-137-	if (separator_val.IsNull()) {
