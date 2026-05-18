@@ -30,8 +30,8 @@ ExternalProject_Add(jq_external
                       --disable-shared --enable-static --with-pic
                       --disable-maintainer-mode --disable-docs
                       --with-oniguruma=builtin
-  BUILD_COMMAND      ${CMAKE_MAKE_PROGRAM}
-  INSTALL_COMMAND    ${CMAKE_MAKE_PROGRAM} install
+  BUILD_COMMAND      make
+  INSTALL_COMMAND    make install
   BUILD_BYPRODUCTS   ${JQ_STATIC_LIB} ${ONIG_STATIC_LIB}
 )
 
