@@ -30,14 +30,14 @@ struct JqBindData : public FunctionData {
 };
 
 struct JqLocalState : public FunctionLocalState {
-	JqLocalState() : jq_state(nullptr) {
+	JqLocalState() : jq(nullptr) {
 	}
 	~JqLocalState() override {
-		if (jq_state) {
-			jq_teardown(&jq_state);
+		if (jq) {
+			jq_teardown(&jq);
 		}
 	}
-	jq_state *jq_state;
+	jq_state *jq;
 };
 
 static void JqErrorCb(void *data, jv msg) {
@@ -83,11 +83,11 @@ static unique_ptr<FunctionLocalState> JqInitLocalState(ExpressionState &state, c
                                                        FunctionData *bind_data) {
 	auto &info = bind_data->Cast<JqBindData>();
 	auto local = make_uniq<JqLocalState>();
-	local->jq_state = jq_init();
-	if (!local->jq_state) {
+	local->jq = jq_init();
+	if (!local->jq) {
 		throw InvalidInputException("jq: failed to allocate jq state");
 	}
-	if (!jq_compile(local->jq_state, info.filter.c_str())) {
+	if (!jq_compile(local->jq, info.filter.c_str())) {
 		throw InvalidInputException("jq: failed to compile filter '%s'", info.filter);
 	}
 	return std::move(local);
@@ -95,7 +95,7 @@ static unique_ptr<FunctionLocalState> JqInitLocalState(ExpressionState &state, c
 
 void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
 	auto &lstate = ExecuteFunctionState::GetFunctionState(state)->Cast<JqLocalState>();
-	auto jq_state = lstate.jq_state;
+	auto jq = lstate.jq;
 	auto inputs_vec = args.data[0];
 
 	auto input_handler = [&](string_t input, ValidityMask &mask, idx_t idx) -> string_t {
@@ -114,8 +114,8 @@ void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
 			throw InvalidInputException("jq: failed to parse input JSON: %s", err);
 		}
 
-		jq_start(jq_state, input_jv, 0); // (input_jv consumed)
-		jv result_jv = jq_next(jq_state);
+		jq_start(jq, input_jv, 0); // (input_jv consumed)
+		jv result_jv = jq_next(jq);
 
 		// no result -> SQL null
 		if (!jv_is_valid(result_jv)) {
@@ -126,7 +126,7 @@ void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
 
 		// extra result -> error
 		// (TODO: add a `jq_multi` function permitting multiple results, and "unnesting" them?)
-		jv extra_jv = jq_next(jq_state);
+		jv extra_jv = jq_next(jq);
 		if (jv_is_valid(extra_jv)) {
 			jv_free(result_jv);
 			jv_free(extra_jv);
