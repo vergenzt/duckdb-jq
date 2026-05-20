@@ -19,6 +19,11 @@ jobs:
       duckdb_version: v1.5.2
       ci_tools_version: v1.5-variegata
       extension_name: jq
+      # jq is built from its autotools build (autoreconf + ./configure + make),
+      # which doesn't work in the MSVC environment used by the default Windows
+      # runners. Excluding Windows archs until we either ship a CMake-based
+      # libjq build or set up MSYS2 with autotools on the Windows job.
+      exclude_archs: 'windows_amd64;windows_amd64_mingw;windows_arm64'
 
   code-quality-check:
     name: Code Quality Check

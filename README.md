@@ -12,7 +12,7 @@ This repository is based on https://github.com/duckdb/extension-template.
 
 ## Functions
 
-### `jq(input JSON, filter VARCHAR) → JSON`
+### `jq(input JSON, filter VARCHAR, allow_multiple BOOLEAN := false) → JSON`
 
 Run the given jq `filter` against the given `input` expression, expecting at most one result per input value.
 
@@ -74,7 +74,7 @@ SELECT jq(j, '.x') FROM (VALUES ('{"x":1}'), ('{"x":2}')) t(j);
 
 ## Building
 
-The jq source lives in the `./jq` submodule and is built via its own autotools build. Make sure submodules are initialized:
+The jq source lives in the `./jq` submodule and is built via its own autotools build (so Linux, macOS, and other Unix-likes are supported; Windows is not currently built — see the `exclude_archs` note in `.github/workflows/MainDistributionPipeline.yml`). Make sure submodules are initialized:
 
 ```sh
 git submodule update --init --recursive
