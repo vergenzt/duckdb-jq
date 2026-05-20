@@ -74,7 +74,7 @@ SELECT jq(j, '.x') FROM (VALUES ('{"x":1}'), ('{"x":2}')) t(j);
 
 ## Building
 
-The jq source lives in the `./jq` submodule and is built via its own autotools build (so Linux, macOS, and other Unix-likes are supported; Windows is not currently built — see the `exclude_archs` note in `.github/workflows/MainDistributionPipeline.yml`). Make sure submodules are initialized:
+The jq source lives in the `./jq` submodule and is built via its own autotools build. Linux, macOS, and Windows (MinGW via rtools42/MSYS2) are supported; MSVC Windows builds are not (jq has no MSVC support upstream). Make sure submodules are initialized:
 
 ```sh
 git submodule update --init --recursive
