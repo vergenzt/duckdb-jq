@@ -107,8 +107,14 @@ struct JqUnnestBindData : public TableFunctionData {
 };
 
 struct JqUnnestGlobalState : public GlobalTableFunctionState {
-	vector<string> results;
-	idx_t offset = 0;
+	jq_state *jq = nullptr;
+	bool done = false;
+
+	~JqUnnestGlobalState() override {
+		if (jq) {
+			jq_teardown(&jq);
+		}
+	}
 };
 
 static unique_ptr<FunctionData> JqUnnestBind(ClientContext &context, TableFunctionBindInput &input,
@@ -145,15 +151,15 @@ static unique_ptr<GlobalTableFunctionState> JqUnnestInitGlobal(ClientContext &co
 	auto state = make_uniq<JqUnnestGlobalState>();
 
 	if (bind_data.json_is_null) {
+		state->done = true;
 		return state;
 	}
 
-	jq_state *jq = jq_init();
-	if (!jq) {
+	state->jq = jq_init();
+	if (!state->jq) {
 		throw InvalidInputException("jq: failed to allocate jq state");
 	}
-	if (!jq_compile(jq, bind_data.filter.c_str())) {
-		jq_teardown(&jq);
+	if (!jq_compile(state->jq, bind_data.filter.c_str())) {
 		throw InvalidInputException("jq: failed to compile filter '%s'", bind_data.filter);
 	}
 
@@ -162,41 +168,36 @@ static unique_ptr<GlobalTableFunctionState> JqUnnestInitGlobal(ClientContext &co
 		jv msg = jv_invalid_get_msg(input_jv);
 		string err = jv_get_kind(msg) == JV_KIND_STRING ? jv_string_value(msg) : "invalid JSON";
 		jv_free(msg);
-		jq_teardown(&jq);
 		throw InvalidInputException("jq: failed to parse input JSON: %s", err);
 	}
 
-	jq_start(jq, input_jv, 0); // (input_jv consumed)
-
-	jv result_jv;
-	while (jv_is_valid(result_jv = jq_next(jq))) {
-		jv result_str = jv_dump_string(result_jv, 0); // (result_jv consumed)
-		int len = jv_string_length_bytes(jv_copy(result_str));
-		state->results.emplace_back(jv_string_value(result_str), UnsafeNumericCast<size_t>(len));
-		jv_free(result_str);
-	}
-	jv_free(result_jv);
-
-	jq_teardown(&jq);
+	jq_start(state->jq, input_jv, 0); // (input_jv consumed)
 	return state;
 }
 
 static void JqUnnestScan(ClientContext &context, TableFunctionInput &data, DataChunk &output) {
 	auto &state = data.global_state->Cast<JqUnnestGlobalState>();
 
-	idx_t remaining = state.results.size() - state.offset;
-	if (remaining == 0) {
+	if (state.done) {
 		output.SetCardinality(0);
 		return;
 	}
 
-	idx_t count = remaining < STANDARD_VECTOR_SIZE ? remaining : STANDARD_VECTOR_SIZE;
+	idx_t count = 0;
 	auto result_data = FlatVector::GetData<string_t>(output.data[0]);
-	for (idx_t i = 0; i < count; i++) {
-		result_data[i] = StringVector::AddString(output.data[0], state.results[state.offset + i]);
+	while (count < STANDARD_VECTOR_SIZE) {
+		jv result_jv = jq_next(state.jq);
+		if (!jv_is_valid(result_jv)) {
+			jv_free(result_jv);
+			state.done = true;
+			break;
+		}
+		jv result_str = jv_dump_string(result_jv, 0); // (result_jv consumed)
+		idx_t len = UnsafeNumericCast<idx_t>(jv_string_length_bytes(jv_copy(result_str)));
+		result_data[count++] = StringVector::AddString(output.data[0], jv_string_value(result_str), len);
+		jv_free(result_str);
 	}
 	output.SetCardinality(count);
-	state.offset += count;
 }
 
 void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
