@@ -71,3 +71,45 @@ statement error
 WITH t(j, f) AS (VALUES ('1', '.')) SELECT jq(j, f) FROM t;
 ----
 jq filter must be a constant expression
+
+# jq_unnest: filter producing multiple results returns one row per result
+query I
+SELECT value FROM jq_unnest('{"a":[10,20,30]}', '.a[]');
+----
+10
+20
+30
+
+# jq_unnest: single result works too
+query I
+SELECT value FROM jq_unnest('{"x":42}', '.x');
+----
+42
+
+# jq_unnest: filter with no results returns zero rows
+query I
+SELECT value FROM jq_unnest('1', 'empty');
+----
+
+# jq_unnest: NULL JSON input returns zero rows
+query I
+SELECT value FROM jq_unnest(NULL, '.foo');
+----
+
+# jq_unnest: per-row via lateral join
+query II
+SELECT t.n, j.value
+FROM (VALUES (1, '[10,11]'), (2, '[20,21]')) t(n, j),
+     jq_unnest(t.j, '.[]') j(value)
+ORDER BY t.n, j.value;
+----
+1	10
+1	11
+2	20
+2	21
+
+# jq_unnest: invalid filter is rejected at bind time
+statement error
+SELECT value FROM jq_unnest('1', '.[');
+----
+failed to compile filter
