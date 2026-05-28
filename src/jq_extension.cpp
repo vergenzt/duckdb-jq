@@ -206,8 +206,6 @@ void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
 	auto inputs_vec = args.data[0];
 
 	auto input_handler = [&](string_t input, ValidityMask &mask, idx_t idx) -> string_t {
-		// TODO: add a setting for whether to coerce input/output JSON nulls to/from SQL nulls?
-
 		// TODO: can we get rid of the UnsafeNumericCast?
 		// > main problem is that jv_parse_sized takes an i32 but input.GetSize() is a u64.
 		// > what happens if input is longer than 2^32? (4 GiB)
