@@ -97,18 +97,14 @@ static unique_ptr<FunctionLocalState> JqInitLocalState(ExpressionState &state, c
 // ==== jq_unnest table function ====
 
 struct JqUnnestBindData : public TableFunctionData {
-	string json_input;
 	string filter;
-	bool json_is_null;
-
-	JqUnnestBindData(string json_input_p, string filter_p, bool json_is_null_p)
-	    : json_input(std::move(json_input_p)), filter(std::move(filter_p)), json_is_null(json_is_null_p) {
+	explicit JqUnnestBindData(string filter_p) : filter(std::move(filter_p)) {
 	}
 };
 
 struct JqUnnestGlobalState : public GlobalTableFunctionState {
 	jq_state *jq = nullptr;
-	bool done = false;
+	bool started = false;
 
 	~JqUnnestGlobalState() override {
 		if (jq) {
@@ -121,9 +117,6 @@ static unique_ptr<FunctionData> JqUnnestBind(ClientContext &context, TableFuncti
                                               vector<LogicalType> &return_types, vector<string> &names) {
 	return_types.push_back(LogicalType::JSON());
 	names.push_back("value");
-
-	bool json_is_null = input.inputs[0].IsNull();
-	string json_input = json_is_null ? "" : input.inputs[0].GetValue<string>();
 
 	if (input.inputs[1].IsNull()) {
 		throw InvalidInputException("jq filter must not be NULL");
@@ -142,19 +135,13 @@ static unique_ptr<FunctionData> JqUnnestBind(ClientContext &context, TableFuncti
 		throw InvalidInputException("jq: failed to compile filter '%s': %s", filter, err);
 	}
 
-	return make_uniq<JqUnnestBindData>(std::move(json_input), std::move(filter), json_is_null);
+	return make_uniq<JqUnnestBindData>(std::move(filter));
 }
 
 static unique_ptr<GlobalTableFunctionState> JqUnnestInitGlobal(ClientContext &context,
                                                                 TableFunctionInitInput &input) {
 	auto &bind_data = input.bind_data->Cast<JqUnnestBindData>();
 	auto state = make_uniq<JqUnnestGlobalState>();
-
-	if (bind_data.json_is_null) {
-		state->done = true;
-		return state;
-	}
-
 	state->jq = jq_init();
 	if (!state->jq) {
 		throw InvalidInputException("jq: failed to allocate jq state");
@@ -162,25 +149,28 @@ static unique_ptr<GlobalTableFunctionState> JqUnnestInitGlobal(ClientContext &co
 	if (!jq_compile(state->jq, bind_data.filter.c_str())) {
 		throw InvalidInputException("jq: failed to compile filter '%s'", bind_data.filter);
 	}
-
-	jv input_jv = jv_parse_sized(bind_data.json_input.c_str(), UnsafeNumericCast<int>(bind_data.json_input.size()));
-	if (!jv_is_valid(input_jv)) {
-		jv msg = jv_invalid_get_msg(input_jv);
-		string err = jv_get_kind(msg) == JV_KIND_STRING ? jv_string_value(msg) : "invalid JSON";
-		jv_free(msg);
-		throw InvalidInputException("jq: failed to parse input JSON: %s", err);
-	}
-
-	jq_start(state->jq, input_jv, 0); // (input_jv consumed)
 	return state;
 }
 
-static void JqUnnestScan(ClientContext &context, TableFunctionInput &data, DataChunk &output) {
+static OperatorResultType JqUnnestInOut(ExecutionContext &context, TableFunctionInput &data, DataChunk &input,
+                                         DataChunk &output) {
 	auto &state = data.global_state->Cast<JqUnnestGlobalState>();
 
-	if (state.done) {
-		output.SetCardinality(0);
-		return;
+	if (!state.started) {
+		if (FlatVector::IsNull(input.data[0], 0)) {
+			output.SetCardinality(0);
+			return OperatorResultType::NEED_MORE_INPUT;
+		}
+		string_t json_str = FlatVector::GetValue<string_t>(input.data[0], 0);
+		jv input_jv = jv_parse_sized(json_str.GetData(), UnsafeNumericCast<int>(json_str.GetSize()));
+		if (!jv_is_valid(input_jv)) {
+			jv msg = jv_invalid_get_msg(input_jv);
+			string err = jv_get_kind(msg) == JV_KIND_STRING ? jv_string_value(msg) : "invalid JSON";
+			jv_free(msg);
+			throw InvalidInputException("jq: failed to parse input JSON: %s", err);
+		}
+		jq_start(state.jq, input_jv, 0); // (input_jv consumed)
+		state.started = true;
 	}
 
 	idx_t count = 0;
@@ -189,8 +179,9 @@ static void JqUnnestScan(ClientContext &context, TableFunctionInput &data, DataC
 		jv result_jv = jq_next(state.jq);
 		if (!jv_is_valid(result_jv)) {
 			jv_free(result_jv);
-			state.done = true;
-			break;
+			state.started = false;
+			output.SetCardinality(count);
+			return OperatorResultType::NEED_MORE_INPUT;
 		}
 		jv result_str = jv_dump_string(result_jv, 0); // (result_jv consumed)
 		idx_t len = UnsafeNumericCast<idx_t>(jv_string_length_bytes(jv_copy(result_str)));
@@ -198,6 +189,7 @@ static void JqUnnestScan(ClientContext &context, TableFunctionInput &data, DataC
 		jv_free(result_str);
 	}
 	output.SetCardinality(count);
+	return OperatorResultType::HAVE_MORE_OUTPUT;
 }
 
 void JqScalarFun(DataChunk &args, ExpressionState &state, Vector &result_vec) {
@@ -256,8 +248,9 @@ static void LoadInternal(ExtensionLoader &loader) {
 	                                         JqScalarFun, JqScalarBind, nullptr, nullptr, JqInitLocalState);
 	loader.RegisterFunction(jq_scalar_function);
 
-	TableFunction jq_unnest_function("jq_unnest", {LogicalType::VARCHAR, LogicalType::VARCHAR}, JqUnnestScan,
+	TableFunction jq_unnest_function("jq_unnest", {LogicalType::VARCHAR, LogicalType::VARCHAR}, nullptr,
 	                                 JqUnnestBind, JqUnnestInitGlobal);
+	jq_unnest_function.in_out_function = JqUnnestInOut;
 	loader.RegisterFunction(jq_unnest_function);
 }
 
